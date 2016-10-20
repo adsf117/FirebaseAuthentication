@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "263743696826",
+    "firebase_url": "https://testlogin-d5414.firebaseio.com",
+    "project_id": "testlogin-d5414",
+    "storage_bucket": "testlogin-d5414.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263743696826:android:1386dde8c2bd57a5",
+        "android_client_info": {
+          "package_name": "com.puzzlebench.loginfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "263743696826-g7dal2p9konpas1ll0fhlgenef742sn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXcgJfN2__S0QSOR2Yjoe7xvs-SjdpbiM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

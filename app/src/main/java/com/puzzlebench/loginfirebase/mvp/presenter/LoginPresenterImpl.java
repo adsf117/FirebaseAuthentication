@@ -1,5 +1,6 @@
 package com.puzzlebench.loginfirebase.mvp.presenter;
 
+import com.facebook.AccessToken;
 import com.puzzlebench.loginfirebase.interactor.LoginInteractorImpl;
 import com.puzzlebench.loginfirebase.mvp.view.LoginView;
 import com.puzzlebench.loginfirebase.ui.view.OnListenerLogin;
@@ -34,6 +35,17 @@ public class LoginPresenterImpl implements LoginPresenter, OnListenerLogin {
         if (mView != null)
             mInteractor.validarCampos(email,password);
 
+    }
+
+    @Override
+    public void handleFacebookAccessToken(AccessToken token) {
+        mInteractor.handleFacebookAccessToken(token);
+
+    }
+
+    @Override
+    public void removeAuthStateListener() {
+        mInteractor.removeAuthStateListener();
     }
 
 

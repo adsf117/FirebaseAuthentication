@@ -15,5 +15,7 @@
     <string name="name">Nombre</string>
     <string name="requiervalue">Campo Requerido!</string>
     <string name="link_restore_password"><a href="">Recuperar contraseña</a></string>
+    <string name="facebook_app_id">1854958954735686</string>
+
 
 </resources>

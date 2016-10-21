@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +37,7 @@ public class LoginInteractorImpl implements LoginInteractor {
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private Activity activity;
     private OnListenerLogin listenerLogin;
@@ -47,7 +52,24 @@ public class LoginInteractorImpl implements LoginInteractor {
         this.activity = activity;
         mAuth = FirebaseAuth.getInstance();
         listenerLogin = listener;
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    listenerLogin.succefulLogin();
+                } else {
+                    // User is signed out
+                    listenerLogin.succefulLogin();
+                }
+                // ...
+            }
+        };
+        mAuth.addAuthStateListener(mAuthListener);
     }
+
+
 
     @Override
     public void checkLogin() {
@@ -95,6 +117,30 @@ public class LoginInteractorImpl implements LoginInteractor {
             } else {
                 signIn(email, password);
             }
+        }
+    }
+
+    @Override
+    public void handleFacebookAccessToken(AccessToken token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    mUuid = task.getResult().getUser().getUid();
+                    listenerLogin.succefulLogin();
+                }
+                else {
+                    listenerLogin.faildLogin();
+                }
+            }
+        });
+    }
+
+    @Override
+    public void removeAuthStateListener() {
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 

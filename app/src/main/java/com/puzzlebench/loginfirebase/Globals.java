@@ -5,5 +5,5 @@ package com.puzzlebench.loginfirebase;
  */
 public class Globals {
 
-    public  static  final String  REF_USER = "usuarios";
+    public  static  final String  REF_USER = "usuario";
 }

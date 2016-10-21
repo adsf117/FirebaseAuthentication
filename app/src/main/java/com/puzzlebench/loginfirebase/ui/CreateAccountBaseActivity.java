@@ -3,6 +3,8 @@ package com.puzzlebench.loginfirebase.ui;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 
+import com.puzzlebench.loginfirebase.ui.view.CreateAccountBaseView;
+
 
 /**
  * Created by andresdavid on 20/10/16.

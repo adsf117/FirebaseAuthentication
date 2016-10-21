@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.puzzlebench.loginfirebase.Globals;
 import com.puzzlebench.loginfirebase.R;
+import com.puzzlebench.loginfirebase.UtilsValidations;
 import com.puzzlebench.loginfirebase.models.User;
 
 /**
@@ -22,10 +23,10 @@ public class CreateAccountInteractorImp implements CreateAccountInteractor {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef_Usuario = database.getReference(Globals.REF_USER);
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-    CreateAccountInteractor.OnCreateAccountInteractorListener listener;
-    Activity activity;
+    private CreateAccountInteractor.OnCreateAccountInteractorListener listener;
+    private  Activity activity;
 
     public CreateAccountInteractorImp(Activity activity, OnCreateAccountInteractorListener listener) {
         this.activity = activity;
@@ -51,15 +52,18 @@ public class CreateAccountInteractorImp implements CreateAccountInteractor {
         {
             listener.setPasswordError(activity.getString(R.string.requiervalue));
         }
+        else if (password1.getText().toString().length()< UtilsValidations.MAXLENGTHPASSWORD)
+        {
+            listener.setPasswordError(String.format(activity.getString(R.string.error_password_length),UtilsValidations.MAXLENGTHPASSWORD));
+        }
         else if (!password1.getText().toString().equals(password2.getText().toString())) {
             listener.setPasswordConfirmError(activity.getString(R.string.error_noequals_passwords));
         }
         else {
-
             User user = new User();
             user.setEmail(email.getText().toString());
+            user.setName(name.getText().toString());
             crearUsuario(user,password1.getText().toString());
-
         }
     }
 
@@ -69,9 +73,8 @@ public class CreateAccountInteractorImp implements CreateAccountInteractor {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    myRef_Usuario.child(task.getResult().getUser().getUid()).setValue(user);
+                    //myRef_Usuario.child(task.getResult().getUser().getUid()).setValue(user);
                     listener.successfulCreateAccount();
-
                 }
                 else{
                     listener.failCreateAccount("Error Creando cueent");

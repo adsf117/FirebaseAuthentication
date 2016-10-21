@@ -1,4 +1,4 @@
-package com.puzzlebench.loginfirebase.ui;
+package com.puzzlebench.loginfirebase.ui.view;
 
 import android.app.Activity;
 

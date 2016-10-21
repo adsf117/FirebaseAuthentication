@@ -1,8 +1,6 @@
 package com.puzzlebench.loginfirebase.mvp.view;
 
-import android.widget.EditText;
-
-import com.puzzlebench.loginfirebase.ui.CreateAccountBaseView;
+import com.puzzlebench.loginfirebase.ui.view.CreateAccountBaseView;
 
 /**
  * Created by andresdavid on 20/10/16.

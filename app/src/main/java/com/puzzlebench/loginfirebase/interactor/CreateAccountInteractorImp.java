@@ -1,9 +1,17 @@
 package com.puzzlebench.loginfirebase.interactor;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.puzzlebench.loginfirebase.Globals;
 import com.puzzlebench.loginfirebase.R;
 import com.puzzlebench.loginfirebase.models.User;
 
@@ -11,6 +19,10 @@ import com.puzzlebench.loginfirebase.models.User;
  * Created by andresdavid on 20/10/16.
  */
 public class CreateAccountInteractorImp implements CreateAccountInteractor {
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef_Usuario = database.getReference(Globals.REF_USER);
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     CreateAccountInteractor.OnCreateAccountInteractorListener listener;
     Activity activity;
@@ -23,6 +35,7 @@ public class CreateAccountInteractorImp implements CreateAccountInteractor {
 
     @Override
     public void validateFrom(EditText email, EditText name, EditText password1, EditText password2) {
+
         if(TextUtils.isEmpty(email.getText().toString()))
         {
             listener.setEmailError(activity.getString(R.string.requiervalue));
@@ -42,7 +55,28 @@ public class CreateAccountInteractorImp implements CreateAccountInteractor {
             listener.setPasswordConfirmError(activity.getString(R.string.error_noequals_passwords));
         }
         else {
-            listener.successfulCreateAccount();
+
+            User user = new User();
+            user.setEmail(email.getText().toString());
+            crearUsuario(user,password1.getText().toString());
+
         }
+    }
+
+    public void crearUsuario(final User user, String password) {
+
+        firebaseAuth.createUserWithEmailAndPassword(user.getEmail(), password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    myRef_Usuario.child(task.getResult().getUser().getUid()).setValue(user);
+                    listener.successfulCreateAccount();
+
+                }
+                else{
+                    listener.failCreateAccount("Error Creando cueent");
+                }
+            }
+        });
     }
 }

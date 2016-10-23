@@ -3,8 +3,10 @@ package com.puzzlebench.loginfirebase.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -16,6 +18,15 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.puzzlebench.loginfirebase.R;
 import com.puzzlebench.loginfirebase.mvp.presenter.LoginPresenter;
 import com.puzzlebench.loginfirebase.mvp.presenter.LoginPresenterImpl;
@@ -28,7 +39,11 @@ import butterknife.OnClick;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends LoginBaseActivity implements LoginView {
+public class LoginActivity extends LoginBaseActivity implements
+        GoogleApiClient.OnConnectionFailedListener,
+        View.OnClickListener, LoginView {
+
+    private static final String TAG = "SignInActivity";
 
     @BindView(R.id.login_progress)
     ProgressBar mLogin_progress;
@@ -53,13 +68,9 @@ public class LoginActivity extends LoginBaseActivity implements LoginView {
     LoginButton facebook_login_button;
 
     CallbackManager callbackManager;
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleApiClient mGoogleApiClient;
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode,resultCode,data);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,29 +85,39 @@ public class LoginActivity extends LoginBaseActivity implements LoginView {
         facebook_login_button.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                loginPresenter.handleFacebookAccessToken(loginResult.getAccessToken());
-                Toast.makeText(getApplicationContext(),"onSuccess facebook_login",Toast.LENGTH_LONG).show();
+                loginPresenter.handlefirebaseAuthWithFacebook(loginResult.getAccessToken());
+                Toast.makeText(getApplicationContext(), "onSuccess facebook_login", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getApplicationContext(),"onCancel facebook_login",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "onCancel facebook_login", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(getApplicationContext(),"onError facebook_login"+error.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "onError facebook_login" + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+        SignInButton signInButton = (SignInButton) findViewById(R.id.google_login_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setScopes(gso.getScopeArray());
+        signInButton.setOnClickListener(this);
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (loginPresenter!=null)
-        {
+        if (loginPresenter != null) {
             loginPresenter.removeAuthStateListener();
         }
     }
@@ -140,58 +161,96 @@ public class LoginActivity extends LoginBaseActivity implements LoginView {
         alertDialog.show();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.google_login_button:
+                signIn();
+                break;
+        }
+    }
 
+    // [START signIn]
+    private void signIn() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+    // [END signIn]
+// [START onActivityResult]
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
 
-@Override
-public void setEmailError(String error){
+                loginPresenter.handlefirebaseAuthWithGoogle(result.getSignInAccount());
+            } else {
+
+                Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+            }
+        }
+        else{
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void setEmailError(String error) {
         email_login_TextInputLayout.setError(error);
         email_loginEditText.requestFocus();
-        }
+    }
 
-@Override
-public void setPasswordError(String error){
+    @Override
+    public void setPasswordError(String error) {
         password_login_TextInputLayout.setError(error);
         password_login_TextView.requestFocus();
-        }
+    }
 
-@Override
-public void faildRestorePassword(){
+    @Override
+    public void faildRestorePassword() {
         mLogin_progress.setVisibility(View.GONE);
         login_email_form.setVisibility(View.VISIBLE);
-        }
+    }
 
-@Override
-public void succefulRestorePassword(){
+    @Override
+    public void succefulRestorePassword() {
         mLogin_progress.setVisibility(View.GONE);
         login_email_form.setVisibility(View.VISIBLE);
-        }
+    }
 
-@Override
-public void faildLogin(){
+    @Override
+    public void faildLogin() {
         mLogin_progress.setVisibility(View.GONE);
         login_email_form.setVisibility(View.VISIBLE);
-        }
+    }
 
-@Override
-public void succefulLogin(){
-        Toast.makeText(this,"succefulLogin",Toast.LENGTH_LONG).show();
-        }
+    @Override
+    public void succefulLogin() {
+        Toast.makeText(this, "succefulLogin", Toast.LENGTH_LONG).show();
+    }
 
-@Override
-public void noInternetConection(){
+    @Override
+    public void noInternetConection() {
         mLogin_progress.setVisibility(View.GONE);
         login_email_form.setVisibility(View.VISIBLE);
-        }
+    }
 
-@Override
-public void showLoginForm(){
+    @Override
+    public void showLoginForm() {
         mLogin_progress.setVisibility(View.VISIBLE);
         login_email_form.setVisibility(View.GONE);
-        }
+    }
 
-public void createAccount(View v){
-        startActivity(new Intent(LoginActivity.this,CreateAccount.class));
-        }
-        }
+    public void createAccount(View v) {
+        startActivity(new Intent(LoginActivity.this, CreateAccount.class));
+    }
+
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+}
 

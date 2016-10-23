@@ -8,7 +8,7 @@
     <string name="error_field_required">This field is required</string>
     <string name="error_invalid_email_format">Formato email no valido!</string>
     <string name="error_noequals_passwords">Las Contraseñas no son iguales</string>
-    <string name="error_password_length">La contraseña debe tener minino %s caracteres</string>
+    <string name="error_password_length">La contraseña debe tener minino %d caracteres</string>
     <string name="create_account">Crear Cuenta</string>
     <string name="password_corfirm">Confirmar Contraseña</string>
     <string name="password">Contraseña</string>

@@ -38,8 +38,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -53,11 +52,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/password"
-                    android:imeActionId="@+id/login"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -75,15 +72,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/link_restore_password"
                 android:id="@+id/restore_password"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:textStyle="italic"
-                android:singleLine="true"
                 android:autoLink="web"
                 android:linksClickable="true"
                 android:textColorLink="@color/colorAccent"
-                android:clickable="false" />
+                android:clickable="false"
+                android:maxLines="1" />
 
             <Button
                 android:layout_width="match_parent"
@@ -97,12 +92,20 @@
 
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/facebook_login_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:padding="10dp" />
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_margin="10dp" />
+
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/google_login_button"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
 
         </LinearLayout>
     </ScrollView>

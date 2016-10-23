@@ -15,6 +15,50 @@
       },
       "oauth_client": [
         {
+          "client_id": "263743696826-scs516c7t4bvtmtl97naumnhrif471md.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.puzzlebench.loginfirebase",
+            "certificate_hash": "E4FD8D177FFA44FE5DB63AE8753E91BA3EE7BF40"
+          }
+        },
+        {
+          "client_id": "263743696826-g7dal2p9konpas1ll0fhlgenef742sn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXcgJfN2__S0QSOR2Yjoe7xvs-SjdpbiM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "263743696826-g7dal2p9konpas1ll0fhlgenef742sn0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263743696826:android:a1c38749fabd69c8",
+        "android_client_info": {
+          "package_name": "com.puzzlebench.loginfirebasedad"
+        }
+      },
+      "oauth_client": [
+        {
           "client_id": "263743696826-g7dal2p9konpas1ll0fhlgenef742sn0.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -50,6 +50,11 @@ public class LoginPresenterImpl implements LoginPresenter, OnListenerLogin {
     }
 
     @Override
+    public void handlefirebaseAuthWithTwitter(String token, String secret) {
+        interactor.handlefirebaseAuthWithTwitter(token,secret);
+    }
+
+    @Override
     public void removeAuthStateListener() {
         interactor.removeAuthStateListener();
     }

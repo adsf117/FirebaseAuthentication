@@ -12,6 +12,7 @@ public interface LoginPresenter {
     void validarCampos(String email, String password);
     void handlefirebaseAuthWithFacebook(AccessToken token);
     void handlefirebaseAuthWithGoogle(GoogleSignInAccount acct);
+    void handlefirebaseAuthWithTwitter(String token, String secret);
     void removeAuthStateListener();
 
 }

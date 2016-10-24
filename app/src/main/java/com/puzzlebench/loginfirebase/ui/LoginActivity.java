@@ -31,6 +31,11 @@ import com.puzzlebench.loginfirebase.R;
 import com.puzzlebench.loginfirebase.mvp.presenter.LoginPresenter;
 import com.puzzlebench.loginfirebase.mvp.presenter.LoginPresenterImpl;
 import com.puzzlebench.loginfirebase.mvp.view.LoginView;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,6 +75,8 @@ public class LoginActivity extends LoginBaseActivity implements
     CallbackManager callbackManager;
     private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
+
+    private TwitterLoginButton twitterLoginButton;
 
 
     @Override
@@ -111,6 +118,22 @@ public class LoginActivity extends LoginBaseActivity implements
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setScopes(gso.getScopeArray());
         signInButton.setOnClickListener(this);
+
+        twitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                // The TwitterSession is also available through:
+                // Twitter.getInstance().core.getSessionManager().getActiveSession()
+                TwitterSession session = result.data;
+                loginPresenter.handlefirebaseAuthWithTwitter(session.getAuthToken().token,session.getAuthToken().secret);
+            }
+            @Override
+            public void failure(TwitterException exception) {
+                Log.d("TwitterKit", "Login with Twitter failure", exception);
+            }
+        });
+
 
     }
 
@@ -175,8 +198,9 @@ public class LoginActivity extends LoginBaseActivity implements
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-    // [END signIn]
-// [START onActivityResult]
+    // [END sign
+
+    // [START onActivityResult]
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -192,6 +216,7 @@ public class LoginActivity extends LoginBaseActivity implements
             }
         }
         else{
+            twitterLoginButton.onActivityResult(requestCode, resultCode, data);
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
